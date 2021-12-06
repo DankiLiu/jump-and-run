@@ -1,57 +1,59 @@
 import pygame
 
-'''
-        weight = 5
-        init_x = 50
-        init_y = 400
-        color = (255, 255, 255)   
-'''
+FIG_SIZE = 30
+FIG_POS = [30, 30]
+FIG_COLOR = (222, 141, 124)
+WEIGHT = 5
 
 
 class Figure:
-    def __init__(self, name, weight, x, y,
-                 color, surface):
+    def __init__(self, name="catchphrase"):
         self.name = name
-        self.weight = weight
-        self.velocity = 0
-        self.x = x
-        self.y = y
-        self.color = color
-        self.surface = surface
+        self.velocity = 0.0
         self.is_jump = False
+        self.on_ground = True
 
 
 class FigureRect(Figure):
-    def __init__(self, name, weight, x, y,
-                 color, width, height, surface):
-        super(FigureRect, self).__init__(name,
-                                         weight,
-                                         x,
-                                         y,
-                                         color,
-                                         surface)
-        self.rect_width = width
-        self.rect_height = height
-        self.rect = pygame.Rect(self.x, self.y,
-                                self.rect_width,
-                                self.rect_height)
+    def __init__(self, pos, size, name="Sha",
+                 color=FIG_COLOR):
+        super(FigureRect, self).__init__(name)
+        self.rect_size = size
+        self._x = pos[0]
+        self._y = pos[1]
+        self.rect = pygame.Rect(self._x,
+                                self._y,
+                                self.rect_size,
+                                self.rect_size)
+        self.color = color
 
-    def draw_rect(self):
-        self.rect = pygame.Rect(self.x, self.y,
-                                self.rect_width,
-                                self.rect_height)
-        pygame.draw.rect(self.surface,
-                         self.color,
-                         self.rect)
+    @property
+    def x(self):
+        return self._x
+
+    @x.setter
+    def x(self, new_x):
+        self.rect.x = new_x
+        self._x = self.rect.x
+
+    @property
+    def y(self):
+        return self._y
+
+    @y.setter
+    def y(self, new_y):
+        self.rect.y = new_y
+        self._y = self.rect.y
+
+    @property
+    def width(self):
+        return self.rect_size
+
+    @property
+    def height(self):
+        return self.rect_size
 
 
 class FigureCircle(Figure):
-    def __init__(self, name, weight, x, y,
-                 color, radius, surface):
-        super(FigureCircle, self).__init__(name,
-                                           weight,
-                                           x,
-                                           y,
-                                           color,
-                                           surface)
-        self.radius = radius
+    def __init__(self, settings, name):
+        super(FigureCircle, self).__init__(settings)

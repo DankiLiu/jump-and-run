@@ -1,61 +1,44 @@
 import pygame
 
-from figure import FigureRect, FigureCircle
 from settings import Settings
+from controller import key_events, update_player
+from util import generate_bars, generate_player,\
+    draw_bars, draw_ground, draw_player, generate_gd
 
 pygame.init()
-win = pygame.display.set_mode((500, 500))
+# Create a canvas
+settings = Settings()
+win = pygame.display.set_mode((settings.can_w,
+                               settings.can_h))
+
 pygame.display.set_caption("Jump and Run")
 
-settings = Settings(velocity=50, gravity=10)
 
-t = 1
+# Create ground
+ground = generate_gd(settings)
+
+# Create player
+figure = generate_player(settings)
+
+# Create bars
+bars = generate_bars(5, settings)
 
 while settings.active:
-    pygame.time.delay(100)
+    pygame.time.delay(int(1000.0 / 60.0))
     events = pygame.event.get()
-
-    # Create object
-    figure = FigureRect(name="my_rect",
-                        weight=5,
-                        x=50,
-                        y=400,
-                        color=(255, 255, 255),
-                        width=50,
-                        height=50,
-                        surface=win)
 
     for event in events:
         if event.type == pygame.QUIT:
             settings.active = False
     keys = pygame.key.get_pressed()
+    key_events(keys, figure, settings, bars)
 
-    if not figure.is_jump and keys[pygame.K_UP]:
-        figure.is_jump = True
-        figure.velocity = settings.v0
-    if figure.is_jump:
-        print("jump")
-        s = figure.velocity * t + 0.5 * \
-            settings.direction * \
-            settings.gravity * (t ** 2)
-        figure.velocity -= settings.direction * \
-                           settings.gravity * t
-        figure.y -= s
-        t += 1
-        print("y=", figure.y, " v=", figure.velocity)
-        if figure.velocity <= 0:
-            print("changed direction")
-            settings.direction = -1
-        if figure.velocity >= -settings.v0:
-            print("stop")
-            figure.is_jump = False
-            figure.velocity = 0
-            settings.direction = 1
-            y = 400
-            t = 1
-        print("y=", figure.y, " v=", figure.velocity)
+    update_player(figure, settings, bars)
+
     win.fill((0, 0, 0))
-    figure.draw_rect()
+    draw_ground(win, ground, settings)
+    draw_bars(win, bars)
+    draw_player(win, figure)
     pygame.display.update()
 
 pygame.quit()
