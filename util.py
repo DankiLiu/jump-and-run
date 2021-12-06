@@ -31,17 +31,17 @@ def generate_bars(num, settings):
         x = randrange(settings.can_w - size[0] -
                       settings.margin_h)
         y = h_dis * i + settings.margin_v + settings.gd_thick
-        print(f"x:{x} y:{y} ")
+
         bar = JumpingBar([x, y], [70, 5],
-                         color=(123, 29, 97))
+                         color=settings.bar_c)
         group.add(bar)
     return group
 
 
 def generate_player(settings):
-    size = 30
+    size = [20, 45]
     x = settings.margin_h
-    y = settings.gd_height - size
+    y = settings.gd_height - size[1]
     return FigureRect([x, y], size=size)
 
 

@@ -7,7 +7,7 @@ WEIGHT = 5
 
 
 class Figure:
-    def __init__(self, name="catchphrase"):
+    def __init__(self, name="pat"):
         self.name = name
         self.velocity = 0.0
         self.is_jump = False
@@ -21,10 +21,12 @@ class FigureRect(Figure):
         self.rect_size = size
         self._x = pos[0]
         self._y = pos[1]
+        self.width = size[0]
+        self.height = size[1]
         self.rect = pygame.Rect(self._x,
                                 self._y,
-                                self.rect_size,
-                                self.rect_size)
+                                self.width,
+                                self.height)
         self.color = color
 
     @property
@@ -44,14 +46,6 @@ class FigureRect(Figure):
     def y(self, new_y):
         self.rect.y = new_y
         self._y = self.rect.y
-
-    @property
-    def width(self):
-        return self.rect_size
-
-    @property
-    def height(self):
-        return self.rect_size
 
 
 class FigureCircle(Figure):

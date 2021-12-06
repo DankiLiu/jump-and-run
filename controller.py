@@ -1,6 +1,6 @@
 import pygame
 
-is_upon = False
+IS_UP = False
 COLL_COLOR = (237, 66, 86)
 ORI_COLOR = (123, 29, 97)
 
@@ -8,9 +8,10 @@ ORI_COLOR = (123, 29, 97)
 def key_events(keys, figure, settings, bars):
     """Events for key-pressing."""
     if keys[pygame.K_UP]:
-        figure.is_jump = True
-        figure.velocity = settings.speed
-        jump_up(figure, settings)
+        if not figure.is_jump:
+            figure.is_jump = True
+            figure.velocity = settings.speed
+            jump_up(figure, settings)
     if keys[pygame.K_LEFT]:
         move_left(figure, settings)
     if keys[pygame.K_RIGHT]:
@@ -19,7 +20,7 @@ def key_events(keys, figure, settings, bars):
         settings.active = False
 
 
-def update_player(figure, settings, bars):
+def update_player(figure, settings, bars, ground):
     """
     If the player collides with the jumping bar on the top surface,
     then it will stays on the bar, otherwise it will fall.
@@ -28,17 +29,8 @@ def update_player(figure, settings, bars):
     :param bars: jumping bars
     :return: None
     """
-    '''
-    Is player is on the surface, velocity=0, if it is not on the surface,
-    apply gravity.
-    If it jumps, velocity=speed, apply gravity
-    '''
-    if figure.y + figure.rect_size >= settings.gd_height:
-        # Player touches the ground, horizontal position does not move.
-        figure.velocity = 0
-        settings.is_jump = False
-        return
-
+    scroll_vertical(figure, settings, bars, ground)
+    bars.add(ground)
     diff, is_collide = check_collision_next_step(figure, settings, bars)
     if is_collide:
         figure.velocity = 0
@@ -69,16 +61,15 @@ def check_collision_next_step(figure, settings, bars):
         collision = check_collision(y, velocity, figure, bars)
         if collision:
             break
-    print(diff)
     return diff, collision
 
 
 def move_left(figure, settings):
-    figure.x -= settings.speed
+    figure.x -= settings.h_speed
 
 
 def move_right(figure, settings):
-    figure.x += settings.speed
+    figure.x += settings.h_speed
 
 
 def check_collision(y, velocity, figure, bars):
@@ -89,9 +80,38 @@ def check_collision(y, velocity, figure, bars):
         right = bar.x + bar.width - figure.width / 2
         # print(f"range is {left} {right}")
         if right >= figure.x >= left:
-            if bar.height + bar.y >= y + figure.rect_size >= bar.y and velocity <= 0:
-                bar.color = COLL_COLOR
+            if bar.height + bar.y >= y + figure.height >= bar.y and velocity <= 0:
                 return True
-        bar.color = ORI_COLOR
     return False
 
+
+def scroll_vertical(figure, settings, bars, ground):
+    """When the player reaches the top of the screen, scroll the screen up."""
+    # If figure.y <= 100, move everything down 100
+    if figure.y <= 50:
+        scroll_up(figure, settings, bars, ground)
+
+    if settings.scrolled_up and figure.y >= 200:
+        scroll_down(figure, settings, bars, ground)
+
+
+def scroll_up(figure, settings, bars, ground):
+    # Scroll all the objects down
+    bars.add(ground)
+
+    for i in range(settings.scroll_dis):
+        for obj in bars:
+            obj.y += 1
+        figure.y += 1
+    settings.scrolled_up = True
+
+
+def scroll_down(figure, settings, bars, ground):
+    bars.add(ground)
+
+    for i in range(settings.scroll_dis):
+        if ground.y <= settings.gd_height:
+            return
+        for obj in bars:
+            obj.y -= 1
+        figure.y -= 1

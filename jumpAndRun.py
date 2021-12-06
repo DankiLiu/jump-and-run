@@ -33,7 +33,7 @@ while settings.active:
     keys = pygame.key.get_pressed()
     key_events(keys, figure, settings, bars)
 
-    update_player(figure, settings, bars)
+    update_player(figure, settings, bars, ground)
 
     win.fill((0, 0, 0))
     draw_ground(win, ground, settings)
