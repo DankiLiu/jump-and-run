@@ -2,8 +2,9 @@ import pygame
 
 from settings import Settings
 from controller import key_events, update_player
-from util import generate_bars, generate_player,\
-    draw_bars, draw_ground, draw_player, generate_gd
+from background import Background
+from util import generate_platforms, generate_player, \
+    draw_ground, draw_player, generate_gd, draw_platforms
 
 pygame.init()
 # Create a canvas
@@ -13,6 +14,8 @@ win = pygame.display.set_mode((settings.can_w,
 
 pygame.display.set_caption("Jump and Run")
 
+# Create bg
+bg = Background("assets/background.png", settings)
 
 # Create ground
 ground = generate_gd(settings)
@@ -21,7 +24,7 @@ ground = generate_gd(settings)
 figure = generate_player(settings)
 
 # Create bars
-bars = generate_bars(5, settings)
+platforms = generate_platforms(settings)
 
 while settings.active:
     pygame.time.delay(int(1000.0 / 60.0))
@@ -31,13 +34,14 @@ while settings.active:
         if event.type == pygame.QUIT:
             settings.active = False
     keys = pygame.key.get_pressed()
-    key_events(keys, figure, settings, bars)
+    key_events(keys, figure, settings, platforms)
 
-    update_player(figure, settings, bars, ground)
+    update_player(figure, settings, platforms, ground)
 
     win.fill((0, 0, 0))
+    win.blit(bg.image, [0, 0])
     draw_ground(win, ground, settings)
-    draw_bars(win, bars)
+    draw_platforms(win, platforms)
     draw_player(win, figure)
     pygame.display.update()
 

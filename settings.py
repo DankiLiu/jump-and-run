@@ -1,8 +1,8 @@
 import pygame
 from random import randrange
 # Game settings
-CANVAS_W = 700
-CANVAS_H = 400
+CANVAS_W = 650
+CANVAS_H = 450
 BG_COLOR = (145, 202, 242)
 
 # Ground settings
@@ -21,10 +21,12 @@ class Settings:
     def __init__(self):
         self.active = True
         # Jumping settings
-        self.speed = 20
+        self.jump_speed = 20
         self.h_speed = 5
         self.acc = 1
-        self.is_jump = False
+
+        # Figure settings
+        self.figure_width = 20
 
         # Ground settings
         self.gd_height = CANVAS_H - GD_H

@@ -7,10 +7,10 @@ ORI_COLOR = (123, 29, 97)
 
 def key_events(keys, figure, settings, bars):
     """Events for key-pressing."""
-    if keys[pygame.K_UP]:
+    if keys[pygame.K_SPACE]:
         if not figure.is_jump:
             figure.is_jump = True
-            figure.velocity = settings.speed
+            figure.velocity = settings.jump_speed
             jump_up(figure, settings)
     if keys[pygame.K_LEFT]:
         move_left(figure, settings)
@@ -23,21 +23,9 @@ def key_events(keys, figure, settings, bars):
 def update_player(figure, settings, bars, ground):
     """
     If the player collides with the jumping bar on the top surface,
-    then it will stays on the bar, otherwise it will fall.
-    :param figure: player object
-    :param settings: game settings
-    :param bars: jumping bars
-    :return: None
+    then it will stay on the bar, otherwise apply gravity.
     """
-    scroll_vertical(figure, settings, bars, ground)
-    bars.add(ground)
-    diff, is_collide = check_collision_next_step(figure, settings, bars)
-    if is_collide:
-        figure.velocity = 0
-        figure.y -= diff
-        figure.is_jump = False
-    else:
-        jump_up(figure, settings)
+    jump_up(figure, settings)
 
 
 def jump_up(figure, settings, diffn=1):

@@ -48,6 +48,52 @@ class FigureRect(Figure):
         self._y = self.rect.y
 
 
-class FigureCircle(Figure):
-    def __init__(self, settings, name):
-        super(FigureCircle, self).__init__(settings)
+class FigurePink(pygame.sprite.Sprite):
+    def __init__(self, image_file, pos, settings):
+        pygame.sprite.Sprite.__init__(self)
+        self.settings = settings
+
+        self.velocity = 0
+        self.is_jump = False
+        self.image = self.load_figure_image(image_file)
+
+        self.rect = self.image.get_rect()
+        self.set_location(pos)
+
+    @property
+    def x(self):
+        return self.rect.x
+
+    @x.setter
+    def x(self, new_x):
+        self.rect.x = new_x
+
+    @property
+    def y(self):
+        return self.rect.y
+
+    @y.setter
+    def y(self, new_y):
+        self.rect.y = new_y
+
+    @property
+    def width(self):
+        return self.rect.width
+
+    @property
+    def height(self):
+        return self.rect.height
+
+    def set_location(self, loc):
+        self.x = loc[0]
+        self.y = self.settings.can_h - self.height - self.settings.gd_thick
+
+    def load_figure_image(self, image_file):
+        image = pygame.image.load(image_file)
+        scale = image.get_width() / self.settings.figure_width
+        figure_width = self.settings.figure_width
+        figure_height = image.get_height() / scale
+
+        return pygame.transform.scale(image,
+                                      (figure_width,
+                                       figure_height))
