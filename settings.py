@@ -26,7 +26,7 @@ class Settings:
         self.acc = 1
 
         # Figure settings
-        self.figure_width = 20
+        self.figure_width = 30
 
         # Ground settings
         self.gd_height = CANVAS_H - GD_H

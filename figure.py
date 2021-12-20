@@ -1,3 +1,5 @@
+import os
+
 import pygame
 
 FIG_SIZE = 30
@@ -49,13 +51,22 @@ class FigureRect(Figure):
 
 
 class FigurePink(pygame.sprite.Sprite):
-    def __init__(self, image_file, pos, settings):
+    def __init__(self, pos, settings):
         pygame.sprite.Sprite.__init__(self)
         self.settings = settings
 
         self.velocity = 0
         self.is_jump = False
-        self.image = self.load_figure_image(image_file)
+        self.left = False
+        self.right = False
+
+        self.animations = {'left': [], 'right': [],
+                           'jump_left': [], 'jump_right': [], 'jump': [],
+                           'stand': []}
+        self.load_figure_assets()
+        self.animation_speed = 0.1
+        self.animation_index = 0
+        self.image = self.animations['stand'][0]
 
         self.rect = self.image.get_rect()
         self.set_location(pos)
@@ -89,12 +100,46 @@ class FigurePink(pygame.sprite.Sprite):
         self.x = loc[0]
         self.y = self.settings.can_h - self.height - self.settings.gd_thick
 
-    def load_figure_image(self, image_file):
-        image = pygame.image.load(image_file)
-        scale = image.get_width() / self.settings.figure_width
-        figure_width = self.settings.figure_width
-        figure_height = int(image.get_height() / scale)
+    def load_figure_assets(self):
+        self.load_assets_from_directory('jump_left')
+        self.load_assets_from_directory('jump_right')
+        self.load_assets_from_directory('jump')
+        self.load_assets_from_directory('left')
+        self.load_assets_from_directory('right')
+        self.load_assets_from_directory('stand')
 
-        return pygame.transform.scale(image,
-                                      (figure_width,
-                                       figure_height))
+    def load_assets_from_directory(self, directory):
+        path = os.getcwd() + '/assets/girl/' + directory + '/'
+        files = [path + name for name in os.listdir(path)]
+
+        for file in files:
+            image = pygame.image.load(file)
+            # scale = image.get_width() / self.settings.figure_width
+            # figure_width = self.settings.figure_width
+            figure_width = int(image.get_width() / 25)
+            figure_height = int(image.get_height() / 25)
+            self.animations[directory].append(pygame.transform.scale(image,
+                                                                     (figure_width,
+                                                                      figure_height)))
+
+    def animation(self):
+        status = self.status()
+        self.animation_index += self.animation_speed
+        if self.animation_index >= len(self.animations[status]):
+            self.animation_index = 0
+        self.image = self.animations[status][int(self.animation_index)]
+
+    def status(self):
+        if self.is_jump and self.left:
+            return 'jump_left'
+        if self.is_jump and self.right:
+            return 'jump_right'
+        if self.left:
+            return 'left'
+        if self.right:
+            return 'right'
+        if self.is_jump:
+            return 'jump'
+        return 'stand'
+
+

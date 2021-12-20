@@ -30,7 +30,7 @@ def generate_platforms(settings):
     file_path = directory + '/assets/platforms/'
     file_names = [file_path + name for name in os.listdir(directory + '/assets/platforms/')]
     # Generate ground
-    ground_path = directory + '/assets/foreground.png'
+    ground_path = directory + '/assets/platforms/ground.png'
     group.add(Ground(ground_path, [0, 0], settings))
     # Place the bar
     for i in range(len(file_names)):
@@ -45,8 +45,7 @@ def generate_platforms(settings):
 def generate_player(settings):
     # initial height = can_h - ground_h - figure_h
     init_location = [20, 0]
-    return FigurePink(image_file="assets/figure/pink1.png",
-                      pos=init_location,
+    return FigurePink(pos=init_location,
                       settings=settings)
 
 

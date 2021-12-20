@@ -13,9 +13,9 @@ def key_events(keys, figure, settings, platforms, background):
             figure.velocity = settings.jump_speed
             jump_up(figure, settings)
     if keys[pygame.K_LEFT]:
-        move_left(figure, settings, platforms, background)
+        move_left(figure, settings)
     if keys[pygame.K_RIGHT]:
-        move_right(figure, settings, platforms, background)
+        move_right(figure, settings)
     if keys[pygame.K_q]:
         settings.active = False
 
@@ -25,11 +25,15 @@ def update_player(figure, settings, platforms):
     If the player collides with the jumping bar on the top surface,
     then it will stay on the bar, otherwise apply gravity.
     """
+    figure.animation()
     diff, collision = check_collision_next_step(figure, settings, platforms)
     if collision:
         figure.is_jump = False
     else:
         jump_up(figure, settings)
+
+    figure.left = False
+    figure.right = False
 
 
 def jump_up(figure, settings, diffn=1):
@@ -56,13 +60,14 @@ def check_collision_next_step(figure, settings, bars):
     return diff, collision
 
 
-def move_left(figure, settings, platforms, background):
+def move_left(figure, settings):
+    figure.left = True
     figure.x -= settings.h_speed
 
 
-def move_right(figure, settings, platforms, background):
+def move_right(figure, settings):
+    figure.right = True
     figure.x += settings.h_speed
-
 
 
 def check_collision(y, velocity, figure, bars):
