@@ -59,6 +59,7 @@ class FigurePink(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect()
         self.set_location(pos)
+        self.drawing_pos = pos
 
     @property
     def x(self):
@@ -92,7 +93,7 @@ class FigurePink(pygame.sprite.Sprite):
         image = pygame.image.load(image_file)
         scale = image.get_width() / self.settings.figure_width
         figure_width = self.settings.figure_width
-        figure_height = image.get_height() / scale
+        figure_height = int(image.get_height() / scale)
 
         return pygame.transform.scale(image,
                                       (figure_width,

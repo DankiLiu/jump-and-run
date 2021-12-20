@@ -5,7 +5,7 @@ COLL_COLOR = (237, 66, 86)
 ORI_COLOR = (123, 29, 97)
 
 
-def key_events(keys, figure, settings, bars):
+def key_events(keys, figure, settings, platforms, background):
     """Events for key-pressing."""
     if keys[pygame.K_SPACE]:
         if not figure.is_jump:
@@ -13,19 +13,23 @@ def key_events(keys, figure, settings, bars):
             figure.velocity = settings.jump_speed
             jump_up(figure, settings)
     if keys[pygame.K_LEFT]:
-        move_left(figure, settings)
+        move_left(figure, settings, platforms, background)
     if keys[pygame.K_RIGHT]:
-        move_right(figure, settings)
+        move_right(figure, settings, platforms, background)
     if keys[pygame.K_q]:
         settings.active = False
 
 
-def update_player(figure, settings, bars, ground):
+def update_player(figure, settings, platforms):
     """
     If the player collides with the jumping bar on the top surface,
     then it will stay on the bar, otherwise apply gravity.
     """
-    jump_up(figure, settings)
+    diff, collision = check_collision_next_step(figure, settings, platforms)
+    if collision:
+        figure.is_jump = False
+    else:
+        jump_up(figure, settings)
 
 
 def jump_up(figure, settings, diffn=1):
@@ -52,12 +56,13 @@ def check_collision_next_step(figure, settings, bars):
     return diff, collision
 
 
-def move_left(figure, settings):
+def move_left(figure, settings, platforms, background):
     figure.x -= settings.h_speed
 
 
-def move_right(figure, settings):
+def move_right(figure, settings, platforms, background):
     figure.x += settings.h_speed
+
 
 
 def check_collision(y, velocity, figure, bars):
@@ -68,38 +73,6 @@ def check_collision(y, velocity, figure, bars):
         right = bar.x + bar.width - figure.width / 2
         # print(f"range is {left} {right}")
         if right >= figure.x >= left:
-            if bar.height + bar.y >= y + figure.height >= bar.y and velocity <= 0:
+            if bar.collision_height + bar.collision_y >= y + figure.height >= bar.collision_y and velocity <= 0:
                 return True
     return False
-
-
-def scroll_vertical(figure, settings, bars, ground):
-    """When the player reaches the top of the screen, scroll the screen up."""
-    # If figure.y <= 100, move everything down 100
-    if figure.y <= 50:
-        scroll_up(figure, settings, bars, ground)
-
-    if settings.scrolled_up and figure.y >= 200:
-        scroll_down(figure, settings, bars, ground)
-
-
-def scroll_up(figure, settings, bars, ground):
-    # Scroll all the objects down
-    bars.add(ground)
-
-    for i in range(settings.scroll_dis):
-        for obj in bars:
-            obj.y += 1
-        figure.y += 1
-    settings.scrolled_up = True
-
-
-def scroll_down(figure, settings, bars, ground):
-    bars.add(ground)
-
-    for i in range(settings.scroll_dis):
-        if ground.y <= settings.gd_height:
-            return
-        for obj in bars:
-            obj.y -= 1
-        figure.y -= 1

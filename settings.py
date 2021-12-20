@@ -21,7 +21,7 @@ class Settings:
     def __init__(self):
         self.active = True
         # Jumping settings
-        self.jump_speed = 20
+        self.jump_speed = 15
         self.h_speed = 5
         self.acc = 1
 
@@ -52,3 +52,7 @@ class Settings:
         self.scrolled_up = False
         self.scroll_speed = 5
         self.scroll_dis = 50
+
+        # Drawing settings
+        self.screen_x = 0
+        self.screen_y = self.can_h

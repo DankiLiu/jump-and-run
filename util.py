@@ -3,6 +3,7 @@ import pygame.sprite
 from figure import FigurePink
 from jumping_bar import JumpingBar
 from platform import Platform
+from platform import Ground
 from settings import Settings
 import os, os.path
 
@@ -28,9 +29,9 @@ def generate_platforms(settings):
     directory = os.getcwd()
     file_path = directory + '/assets/platforms/'
     file_names = [file_path + name for name in os.listdir(directory + '/assets/platforms/')]
-    print(os.listdir(directory + '/assets/platforms/'))
-    print(file_names)
-
+    # Generate ground
+    ground_path = directory + '/assets/foreground.png'
+    group.add(Ground(ground_path, [0, 0], settings))
     # Place the bar
     for i in range(len(file_names)):
         x = 50 + i * 150
@@ -49,20 +50,26 @@ def generate_player(settings):
                       settings=settings)
 
 
-def draw_ground(win, ground, settings):
-    pygame.draw.rect(surface=win,
-                     color=settings.gd_color,
-                     rect=ground)
-
-
-def draw_platforms(win, group):
+def draw_platforms(win, group, settings):
     for platform in group:
-        win.blit(platform.image, [platform.rect.x, platform.rect.y])
+        win.blit(platform.image, platform.drawing_pos)
+
 
 def draw_player(win, player):
-    win.blit(player.image, [player.x, player.y])
+    win.blit(player.image, player.drawing_pos)
 
 
 def locate(loc, ground_height, settings):
     '''Transform the location from left-bottom to left up.'''
     return loc[0], settings.can_h - ground_height - loc[1]
+
+
+def screen(figure, settings, platforms, background):
+    if figure.x < 200:
+        settings.screen_x = 0
+    else:
+        settings.screen_x = figure.x - 200
+    figure.drawing_pos = [figure.x - settings.screen_x, figure.y]
+    for platform in platforms:
+        platform.drawing_pos[0] = platform.x - settings.screen_x
+    background.drawing_pos[0] = -settings.screen_x
